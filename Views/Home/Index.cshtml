@@ -1,0 +1,94 @@
+﻿@model List<PetShop.ViewModels.PetViewModel> ;   
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="~/lib/jquery/dist/ddslick.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Home/FillCombo",
+            type: "POST",
+            cache: false,
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (data) {
+                //   console.log(data);               
+                var ddData = [];
+
+                for (var i = 0; i < data.length; i++) {
+                    var Pet = new Object();
+                    Pet.id = data[i].id;
+                    Pet.text = data[i].breed;
+                    Pet.value = data[i].breed;
+                    Pet.description = "Description of " + data[i].breed + "  ...";
+                    Pet.imageSrc = data[i].imagePath;
+                    Pet.appetite = data[i].appetite;
+                    Pet.behaviour = data[i].behaviour;
+                    Pet.relationship = data[i].relationship;
+                    ddData.push(Pet);
+                }
+
+                $('#ddlPetInventary').ddslick({
+                    data: ddData,
+                    selectText: "Select your favorite pet",
+                    onSelected: function (data) {
+                        // console.log(data);
+                        var breed = data.selectedData.value;
+                        cleanContent();
+                        $('#imgPet').append($('<img>', { id: 'selectedImg', src: '/images/' + breed + '.jpg' }));
+                        $('#descriptionPet').css("visibility", "visible");
+
+                        $('#behaviour').append(data.selectedData.behaviour);
+                        $('#appetite').append(data.selectedData.appetite);
+                        $('#relationship').append(data.selectedData.relationship);
+                    }
+                });
+            }
+        });
+
+
+        function cleanContent(){
+            $('#imgPet').html('');
+            $('#behaviour').html('');
+            $('#appetite').html('');
+            $('#relationship').html('');
+
+        };
+    });
+
+</script>
+<br/>
+<div class="row">
+    <div class="col-md-4">
+        <div id="ddlPetInventary"></div>
+    </div>
+    <div class="col-md-8" >
+        <div style="border-color:beige;border-width:5px;padding:3px">
+            <div id="imgPet" style="padding:10px"></div>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+        <div class="col-md-8">
+            <div id="descriptionPet" style="visibility:hidden">
+                <div class="form-control" style="font-weight:bold;padding:4px">
+                    BEHAVIOUR : <span id="behaviour"></span>
+                </div>
+                <div class="form-control"  style="font-weight:bold;padding:4px">
+                    APPETITE : <span id="appetite"></span>
+                </div>
+                <div class="form-control"  style="font-weight:bold;padding:4px">
+                    SOCIABILITY : <span id="relationship"></span>
+                </div>
+                <div class="form-control"  style="font-weight:bold;padding:4px">
+                    PRICE : <span ><a mailto:"xxxxx">Contact us!</a></span>
+                </div>
+            <br />
+                <input type="button" class="form-group form-control disabled" value="Pre-order" />
+                
+            </div>
+        </div>
+    </div>
